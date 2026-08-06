@@ -1,0 +1,64 @@
+# PROVENANCE — INFINITY6E / 0607 / glibc 9.1.0
+
+SigmaStar Alkaid SDK for Infinity6E ("Pudding", vendor CHIP = i6e).
+Prebuilt userspace MI libraries. Nothing here is built from source.
+
+## Release
+
+    release_0607   built 2022-06-07 09:41-09:52
+    project_commit ceb04c4
+    sdk_commit     dc99390
+    toolchain      GCC 9.1.0, glibc
+
+The vendor names a drop by its build date, confirmed against two reference
+drops: release_0601 = build_time 20220601223756, release_0902 = 20210902165732.
+This bundle is six days newer than 0601 and on different commits, so it matches
+no public drop exactly.
+
+Read the stamp out of any file with:
+
+    strings libmi_sys.so | grep 'Sigmastar Module'
+
+## Origin
+
+Harvested from a shipped camera firmware and carried via OpenIPC's
+sigmastar-osdrv-infinity6e. Not taken from a vendor SDK release tarball --
+libmi_sys.so matches neither reference drop by md5, and the set differs both
+ways (we carry libcam_*_wrapper, libMD_LINUX, libmi_ive that neither drop has;
+we lack libmi_common, libmi_ldc, libmi_vdisp, libsigma3a that both do).
+
+Previously johnchia/sigmastar-sdk @ cdfe9e3e8421dc6929d1e55dce22ab54e7556fd4, under infinity6e/lib/.
+
+## Unresolved
+
+These five carry no build stamp. libmi_vdf.so IS stamped in the 0601 drop, so
+ours came from somewhere else; the other four are not MI-core:
+
+    libcam_os_wrapper.so
+    libcam_fs_wrapper.so
+    libMD_LINUX.so
+    libmi_ive.so
+    libmi_vdf.so
+
+## Files
+
+    7aabf6788611279db9aa00bfcc88682b  libcam_fs_wrapper.so
+    dace8d63cb726844f1b85b9023c06f6d  libcam_os_wrapper.so
+    3583796934235783a67580572b0b2329  libcus3a.so
+    6fa95df7d5b394644c4b4702f3bcdd72  libispalgo.so
+    d4acd58956d1d8faf1de20264308d973  libMD_LINUX.so
+    6c5e624d64b20d2bef0a45091c47db6b  libmi_ai.so
+    891bece8011341a883adc2f1dddfa220  libmi_ao.so
+    5a5ac37cf596e5695de938478fbeaf82  libmi_divp.so
+    30f68b18f60a3eea9ae833699bb5e6bd  libmi_ipu.so
+    4ee291aa497a484c51080b04eaa77115  libmi_iqserver.so
+    73671fcac764cb618fa5b76f737c2bf0  libmi_isp.so
+    6e5eea720ece01468df7b1fbbd0d7ccf  libmi_ive.so
+    6485803372677674c1c8668d66242c70  libmi_rgn.so
+    3334191ffb20fdee003a043077fa94fc  libmi_sensor.so
+    f3a403183c531876eea1a87a9feb73af  libmi_shadow.so
+    5dc9da997c456bdd2724d009224a232c  libmi_sys.so
+    3c386d1146ceec475b167477bc0de4d3  libmi_vdf.so
+    cb832e83531b9a087b337bc67b87e550  libmi_venc.so
+    8cb4b8f274d8016f7f09c1c4bf54a507  libmi_vif.so
+    b413c3bddc2ffc2d920d1391a4706577  libmi_vpe.so
