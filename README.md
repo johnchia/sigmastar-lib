@@ -23,7 +23,11 @@ library, and toolchain version.
 ```
 INFINITY6E/
   lib/0607/glibc/9.1.0/     MI userspace libraries
-PROVENANCE
+INFINITY6C/
+  lib/0907/glibc/11.1.0/    MI userspace libraries
+  lib/0907/uclibc/9.1.0/    same drop, different content -- see its PROVENANCE
+  PROVENANCE
+PROVENANCE                  INFINITY6E
 ```
 
 `sigmastar-lib.mk` resolves this as
@@ -36,6 +40,12 @@ so a second family, release or C library is a directory rather than a code
 change — the same property `ingenic-lib` has, where `T31/lib/` carries seven SDK
 versions side by side.
 
+That holds for the family component only. `SDK_VERSION` and `LIBC_VERSION` are
+single constants in `sigmastar-lib.mk`, currently `0607` and `9.1.0`, so a
+family on a different drop or toolchain — INFINITY6C is on `0907` and `11.1.0` —
+needs those made per-family before it resolves. Adding the directory is not
+enough on its own.
+
 **Read `PROVENANCE` before changing anything here.** All four path components
 are load-bearing: the vendor's own trees differ in content, not merely in
 codegen, between C library and toolchain variants.
@@ -46,10 +56,18 @@ fail at the first HAL call.
 
 ## Provenance summary
 
-Alkaid `release_0607`, built 2022-06-07, GCC 9.1.0, glibc. Harvested from a
-shipped camera firmware via OpenIPC's `sigmastar-osdrv-infinity6e` — not taken
-from a vendor SDK release tarball, and matching no public drop exactly. Five of
-the twenty carry no vendor build stamp; `PROVENANCE` names them.
+**INFINITY6E** — Alkaid `release_0607`, built 2022-06-07, GCC 9.1.0, glibc.
+Harvested from a shipped camera firmware via OpenIPC's
+`sigmastar-osdrv-infinity6e` — not taken from a vendor SDK release tarball, and
+matching no public drop exactly. Five of the twenty carry no vendor build stamp;
+`PROVENANCE` names them.
+
+**INFINITY6C** — Alkaid `release_0907`, built 2022-09-07, in both GCC 11.1.0
+glibc and GCC 9.1.0 uclibc. Taken from the vendor SDK release tree rather than
+reconstructed from a firmware image, so its provenance is the stronger of the
+two. The variants differ in content, not only codegen. Nothing consumes it yet:
+Infinity6C is a 5.10.61 family and the thingino SigmaStar port is 4.9.84
+throughout. See `INFINITY6C/PROVENANCE`.
 
 No source is available and none is claimed here.
 

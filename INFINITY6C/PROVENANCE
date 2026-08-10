@@ -1,0 +1,69 @@
+# PROVENANCE — INFINITY6C / 0907 / glibc 11.1.0 and uclibc 9.1.0
+
+SigmaStar Alkaid SDK for Infinity6C (vendor CHIP = i6c), the SSC377 line.
+Prebuilt userspace MI libraries. Nothing here is built from source.
+
+## Release
+
+    release_0907   built 2022-09-07
+    project_commit 3a7aec9
+    sdk_commit     3dcd67a
+    mhal_commit    a7acd5c
+
+Both variants come from the same drop and carry the same three commits. Their
+build stamps are minutes apart:
+
+    glibc  11.1.0   build_time.20220907112126
+    uclibc  9.1.0   build_time.20220907111141
+
+Read the stamp out of any file with:
+
+    strings libmi_sys.so | grep 'Sigmastar Module'
+
+## Origin
+
+Taken from the vendor SDK release tree, not harvested from a shipped firmware
+and not taken from OpenIPC. This is a stronger provenance than the INFINITY6E
+entry beside it, which was reconstructed from a camera image.
+
+    ssc377/release_0907/sourcecode/project/release/chip/i6c/ipc/common/
+      glibc/11.1.0/mi_libs/dynamic/
+      uclibc/9.1.0/mi_libs/dynamic/
+
+OpenIPC's sigmastar-osdrv-infinity6c ships the same drop -- identical
+project/sdk/mhal commits -- but only the uclibc 9.1.0 variant, and 20 of its
+31 libraries. It is a subset of what is here, so nothing was taken from it.
+
+## The two variants are not interchangeable
+
+They differ in content, not only in codegen. glibc carries two libraries uclibc
+does not:
+
+    libmi_divp.so
+    libsigma3a.so
+
+so the C library component of the path is load-bearing, and a build that picks
+the wrong one is missing libraries rather than getting differently compiled
+ones.
+
+    glibc  11.1.0   32 libraries
+    uclibc  9.1.0   31 libraries
+
+    md5 libmi_sys.so  glibc   f7ff32117b58c0f29f2c0b7533306c78
+    md5 libmi_sys.so  uclibc  0c3e8b543918b509ddaa1b1f8b5ee2ac
+
+## Unstamped
+
+    libsigma3a.so
+
+carries no vendor build stamp, so its drop cannot be confirmed from the binary
+and is asserted only by the tree it was copied out of. It is glibc-only.
+
+## Not consumed yet
+
+No thingino target builds Infinity6C. This family runs a 5.10.61 kernel while
+the SigmaStar port is 4.9.84 throughout, so these libraries are staged for a
+port that does not exist rather than supporting one that does. Nothing here has
+been loaded on hardware.
+
+No source is available and none is claimed here.
