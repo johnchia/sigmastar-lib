@@ -1,4 +1,4 @@
-# PROVENANCE — INFINITY6C / 0907 / glibc 11.1.0 and uclibc 9.1.0
+# PROVENANCE — infinity6c / 0907 / glibc 11.1.0 and uclibc 9.1.0
 
 SigmaStar Alkaid SDK for Infinity6C (vendor CHIP = i6c), the SSC377 line.
 Prebuilt userspace MI libraries. Nothing here is built from source.
@@ -23,7 +23,7 @@ Read the stamp out of any file with:
 ## Origin
 
 Taken from the vendor SDK release tree, not harvested from a shipped firmware
-and not taken from OpenIPC. This is a stronger provenance than the INFINITY6E
+and not taken from OpenIPC. This is a stronger provenance than the infinity6e
 entry beside it, which was reconstructed from a camera image.
 
     ssc377/release_0907/sourcecode/project/release/chip/i6c/ipc/common/
@@ -84,7 +84,7 @@ than kept beside it:
     lib/0907/uclibc/9.1.0/    48 libraries, 4 licence files
 
 Merged because nothing downstream distinguishes them: both sets install to
-/usr/lib and the HAL dlopens by name, not by directory. INFINITY6E beside this
+/usr/lib and the HAL dlopens by name, not by directory. infinity6e beside this
 is already flat for the same reason -- it was harvested from a firmware image,
 where libcam_os_wrapper and libmi_ive sit among the MI libraries -- so keeping
 i6c split would have made it the odd family out and forced a second install
