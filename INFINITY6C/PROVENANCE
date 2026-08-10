@@ -69,20 +69,34 @@ ones.
     md5 libmi_sys.so  glibc   f7ff32117b58c0f29f2c0b7533306c78
     md5 libmi_sys.so  uclibc  0c3e8b543918b509ddaa1b1f8b5ee2ac
 
-## sigma_common_libs
+## sigma_common_libs, merged in
 
-A second content type from the same drop, carried because the Raptor HAL
-dlopens several of them -- libcam_os_wrapper, libMD_LINUX, libmi_ive.
+The vendor splits its libraries in two, and this repository does not. The
+second set is carried because the Raptor HAL dlopens several of them --
+libcam_os_wrapper, libMD_LINUX, libmi_ive -- and it is merged into lib/ rather
+than kept beside it:
 
-    sigma_common_libs/0907/glibc/11.1.0/   15 libraries, 4 license files
-    sigma_common_libs/0907/uclibc/9.1.0/   17 libraries, 4 license files
+    ssc377/release_0907/sourcecode/project/release/chip/i6c/
+      ipc/common/<libc>/<ver>/mi_libs/dynamic/      32 glibc / 31 uclibc
+      sigma_common_libs/<libc>/<ver>/dynamic/       15 glibc / 17 uclibc
 
-    ssc377/release_0907/sourcecode/project/release/chip/i6c/sigma_common_libs/
-      glibc/11.1.0/dynamic/
-      uclibc/9.1.0/dynamic/
+    lib/0907/glibc/11.1.0/    47 libraries, 4 licence files
+    lib/0907/uclibc/9.1.0/    48 libraries, 4 licence files
+
+Merged because nothing downstream distinguishes them: both sets install to
+/usr/lib and the HAL dlopens by name, not by directory. INFINITY6E beside this
+is already flat for the same reason -- it was harvested from a firmware image,
+where libcam_os_wrapper and libmi_ive sit among the MI libraries -- so keeping
+i6c split would have made it the odd family out and forced a second install
+glob in sigmastar-lib.mk.
+
+The merge is lossless: no filename appears in both vendor sets, in either C
+library variant, so nothing shadows anything. What is lost is the vendor's own
+grouping, which is recorded here instead.
 
 Only the dynamic sets are here; the vendor also ships static/, and a
-uclibc/4.9.4 variant that neither C library variant in use here matches.
+uclibc/4.9.4 variant of the common libraries that neither C library variant in
+use here matches.
 
 These carry a different stamp from the MI libraries -- a wrapper version rather
 than project/sdk/mhal commits -- and it agrees with the same drop:

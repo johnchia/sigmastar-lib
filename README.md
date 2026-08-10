@@ -24,10 +24,8 @@ library, and toolchain version.
 INFINITY6E/
   lib/0607/glibc/9.1.0/     MI userspace libraries
 INFINITY6C/
-  lib/0907/glibc/11.1.0/    MI userspace libraries
+  lib/0907/glibc/11.1.0/    MI libraries + sigma_common_libs, merged
   lib/0907/uclibc/9.1.0/    same drop, different content -- see its PROVENANCE
-  sigma_common_libs/0907/glibc/11.1.0/    wrappers, audio and CV libraries
-  sigma_common_libs/0907/uclibc/9.1.0/    plus the vendor's licence text
   PROVENANCE
 PROVENANCE                  INFINITY6E
 ```
@@ -48,10 +46,13 @@ family on a different drop or toolchain — INFINITY6C is on `0907` and `11.1.0`
 needs those made per-family before it resolves. Adding the directory is not
 enough on its own.
 
-The same applies to content type. `sigmastar-lib.mk` installs one glob, from
-`lib/`, so `sigma_common_libs/` needs a second install line before anything in
-it reaches a target. The Raptor HAL dlopens `libcam_os_wrapper`, `libMD_LINUX`
-and `libmi_ive` from that set, so on INFINITY6C it is not optional.
+Content type stays a single directory on purpose. The vendor splits i6c into
+`mi_libs` and `sigma_common_libs`, but nothing downstream distinguishes them —
+both install to `/usr/lib` and the Raptor HAL dlopens by name — so they are
+merged under `lib/`, which is also the shape INFINITY6E already has. That keeps
+`sigmastar-lib.mk` to one install glob. No filename appears in both vendor sets,
+so the merge shadows nothing; `INFINITY6C/PROVENANCE` records which libraries
+came from which.
 
 **Read `PROVENANCE` before changing anything here.** All four path components
 are load-bearing: the vendor's own trees differ in content, not merely in
