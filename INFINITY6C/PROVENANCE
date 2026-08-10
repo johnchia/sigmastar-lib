@@ -34,6 +34,23 @@ OpenIPC's sigmastar-osdrv-infinity6c ships the same drop -- identical
 project/sdk/mhal commits -- but only the uclibc 9.1.0 variant, and 20 of its
 31 libraries. It is a subset of what is here, so nothing was taken from it.
 
+## Why this drop and not the other two
+
+The SSC377 material carries three releases, all on kernel 5.10.61 and all with
+the same 32 glibc / 31 uclibc library names. They differ in what built them:
+
+    release_0602   glibc  cb0a0d4/50f6653/20679ab  built 2022-05-11
+                   uclibc b5d87b9/5edf260/4830206  built 2022-06-02
+    release_0712   both   d191740/e2d9178/371ffee  built 2022-07-12
+    release_0907   both   3a7aec9/3dcd67a/a7acd5c  built 2022-09-07
+
+release_0602 is not internally consistent: its two C library variants were
+built from different commits three weeks apart, so choosing a variant there
+changes the code and not merely the codegen. release_0712's own release note
+(Maruko_ILS00V1.0.0) calls it a Beta release. release_0907 is the newest, its
+variants agree, and OpenIPC independently shipped this same drop -- a second
+party reaching the same choice.
+
 ## The two variants are not interchangeable
 
 They differ in content, not only in codegen. glibc carries two libraries uclibc
