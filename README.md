@@ -26,6 +26,8 @@ INFINITY6E/
 INFINITY6C/
   lib/0907/glibc/11.1.0/    MI userspace libraries
   lib/0907/uclibc/9.1.0/    same drop, different content -- see its PROVENANCE
+  sigma_common_libs/0907/glibc/11.1.0/    wrappers, audio and CV libraries
+  sigma_common_libs/0907/uclibc/9.1.0/    plus the vendor's licence text
   PROVENANCE
 PROVENANCE                  INFINITY6E
 ```
@@ -45,6 +47,11 @@ single constants in `sigmastar-lib.mk`, currently `0607` and `9.1.0`, so a
 family on a different drop or toolchain — INFINITY6C is on `0907` and `11.1.0` —
 needs those made per-family before it resolves. Adding the directory is not
 enough on its own.
+
+The same applies to content type. `sigmastar-lib.mk` installs one glob, from
+`lib/`, so `sigma_common_libs/` needs a second install line before anything in
+it reaches a target. The Raptor HAL dlopens `libcam_os_wrapper`, `libMD_LINUX`
+and `libmi_ive` from that set, so on INFINITY6C it is not optional.
 
 **Read `PROVENANCE` before changing anything here.** All four path components
 are load-bearing: the vendor's own trees differ in content, not merely in

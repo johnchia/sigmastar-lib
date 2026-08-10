@@ -69,12 +69,55 @@ ones.
     md5 libmi_sys.so  glibc   f7ff32117b58c0f29f2c0b7533306c78
     md5 libmi_sys.so  uclibc  0c3e8b543918b509ddaa1b1f8b5ee2ac
 
+## sigma_common_libs
+
+A second content type from the same drop, carried because the Raptor HAL
+dlopens several of them -- libcam_os_wrapper, libMD_LINUX, libmi_ive.
+
+    sigma_common_libs/0907/glibc/11.1.0/   15 libraries, 4 license files
+    sigma_common_libs/0907/uclibc/9.1.0/   17 libraries, 4 license files
+
+    ssc377/release_0907/sourcecode/project/release/chip/i6c/sigma_common_libs/
+      glibc/11.1.0/dynamic/
+      uclibc/9.1.0/dynamic/
+
+Only the dynamic sets are here; the vendor also ships static/, and a
+uclibc/4.9.4 variant that neither C library variant in use here matches.
+
+These carry a different stamp from the MI libraries -- a wrapper version rather
+than project/sdk/mhal commits -- and it agrees with the same drop:
+
+    glibc  11.1.0  kernel_commit.14a0a79 build_time.20220907112020 wrapper.v2.0.43
+    uclibc  9.1.0  kernel_commit.14a0a79 build_time.20220907111042 wrapper.v2.0.43
+
+    md5 libcam_os_wrapper.so  glibc   ffc25f4392e7126802c16ad5368b72be
+    md5 libcam_os_wrapper.so  uclibc  b376e0a5dd2dfbd8f52400f4481018d3
+
+uclibc carries two libraries glibc does not:
+
+    libg711.so
+    libg726.so
+
+so the C library component selects content here as well.
+
+The four .txt files are the vendor's own license terms for the AEC and APC
+libraries. They are kept beside the binaries they cover rather than dropped,
+because this repository redistributes proprietary payload and those are its
+terms.
+
 ## Unstamped
 
     libsigma3a.so
 
 carries no vendor build stamp, so its drop cannot be confirmed from the binary
 and is asserted only by the tree it was copied out of. It is glibc-only.
+
+Most of sigma_common_libs is unstamped too -- only the two cam wrappers carry
+one. These thirteen are asserted by the tree they came from and nothing else:
+
+    libAEC_LINUX libAED_LINUX libAPC_LINUX libBF_2MIC_LINUX libBF_4MIC_LINUX
+    libfbc_decode libMD_LINUX libmi_ive libOD_LINUX libSRC_LINUX
+    libSSL_2MIC_LINUX libSSL_4MIC_LINUX libVG_LINUX
 
 ## Not consumed yet
 
