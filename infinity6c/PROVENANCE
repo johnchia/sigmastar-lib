@@ -1,7 +1,126 @@
-# PROVENANCE — infinity6c / 0907 / glibc 11.1.0 and uclibc 9.1.0
+# PROVENANCE — infinity6c
 
 SigmaStar Alkaid SDK for Infinity6C (vendor CHIP = i6c), the SSC377 line.
 Prebuilt userspace MI libraries. Nothing here is built from source.
+
+Two drops are carried. `1230` is what `soc/sigmastar/infinity6c.mk` selects;
+`0907` is kept because it is the better-provenanced of the two and is the only
+one with a glibc variant.
+
+    lib/0907/glibc/11.1.0/     47 libraries, 4 licence files
+    lib/0907/uclibc/9.1.0/     48 libraries, 4 licence files
+    lib/1230/uclibc/9.1.0/     51 libraries, 4 licence files
+
+A drop directory is named by the vendor's own release date in MMDD, which is
+the vendor's convention. The two here are two years apart -- 0907 is 2022-09-07
+and 1230 is 2024-12-30 -- so read the year out of this file rather than the
+directory name.
+
+The kernel half of each drop is johnchia/sigmastar-sdk under the same family
+and the same drop name. They must move together: see that repository's
+infinity6c/PROVENANCE.
+
+---
+
+# 1230 — 2024-12-30, uclibc 9.1.0
+
+## Release
+
+    build_time     20241230152545   (libraries)
+    project_commit 8e24a5b
+    sdk_commit     9e4d64f
+    mhal_commit    da23dd9
+
+Read the stamp out of any file with:
+
+    strings libmi_sys.so | grep 'Sigmastar Module'
+
+## Origin
+
+Harvested from the camera's own shipped firmware, not from a vendor release
+tree -- weaker provenance than 0907 beside it, and the same standing as the
+infinity6e entry. The board is a no-name SSC377QE with an imx335. Its flash
+carries two squashfs rootfs images; this is the second, from
+
+    /config/lib/
+
+Note that the same image also carries a *different* MI set at `/lib`, which is
+what `LD_LIBRARY_PATH` in the vendor's `script/demo.sh` points at. That one is a
+2024-06 build carrying the same commit triple as OpenIPC's. It is **not** the
+set that matches the kernel modules and it is not what is here. Pair the two
+halves by commit triple, never by what the vendor's own start script puts on the
+library path:
+
+    /config/lib   project 8e24a5b  sdk 9e4d64f  mhal da23dd9   <- carried here
+    /lib          2024-06, OpenIPC's triple                    <- not carried
+
+## uclibc only
+
+The camera ships one C library flavour and this is it. There is no glibc variant
+to carry, unlike 0907. Every MI library here is `NEEDED libc.so.0`.
+
+That is the reason this drop exists in the tree at all: the port was originally
+built against glibc and needed a substituted CamOs wrapper, cleared execstack
+and an `LD_PRELOAD` to get as far as failing. On a uClibc rootfs the whole set
+is a straight drop-in with none of that.
+
+## Three libraries are glibc-linked anyway
+
+    libADAS_LINUX.so   libg711.so   libg726.so
+
+carry `NEEDED libc.so.6` in an otherwise uClibc set. This is the vendor's own
+inconsistency, not a packaging error here -- 0907's uclibc `libg711`/`libg726`
+are properly uClibc-linked, so these three regressed between drops.
+
+They will not load on a uClibc rootfs without a `libc.so.6` symlink pointing at
+libuClibc, which thingino does not create. None of the three is in the Raptor
+HAL's dlopen set, so nothing currently misses them. They are carried rather than
+dropped because this is an archive of what the vendor shipped.
+
+## Two libraries are GNU-hash-only
+
+    libcam_os_wrapper.so   libcam_fs_wrapper.so
+
+have a `.gnu.hash` section and no SysV `.hash`. A uClibc-ng ldso built without
+`LDSO_GNU_HASH_SUPPORT` cannot resolve anything in them, and reports the failure
+as `can't resolve symbol` with a NULL `dlerror()`. libcam_os_wrapper is the
+first library the HAL dlopens, so the whole stack fails at init. thingino
+enables that option via `configs/fragments/uclibc/gnu-hash.config`.
+
+Static symbol closure does not detect this: it reports the symbols as present,
+because they are.
+
+## The cam wrappers are a later rebuild
+
+    libcam_os_wrapper.so   build_time.20250601102605   wrapper.v2.0.43
+    libcam_fs_wrapper.so   build_time.20250601102607   wrapper.v0.0.8
+
+Six months after the MI libraries, with an empty `kernel_commit`. The wrapper
+*versions* are identical to 0907's, so this is a rebuild of the same source
+rather than a newer wrapper. Expected in a harvested image: the vendor rebuilt
+the firmware after the SDK drop was cut.
+
+## Relationship to 0907
+
+A superset by name. All 48 of 0907/uclibc's filenames are present, and it adds
+
+    libADAS_LINUX.so   libAGC_LINUX.so   libANR_LINUX.so
+
+None of the 48 shared names is byte-identical to its 0907 counterpart -- this is
+a whole generation apart, not a respin.
+
+Smaller despite carrying three more libraries: 3.4M against 0907/uclibc's 5.6M.
+
+## Hardware
+
+Proven on the SSC377QE above, on a thingino uClibc rootfs, encoding 1080p H.264
+at 25fps with no shims of any kind. Single stream. A second encoder channel
+still fails to bind (`MI_SYS_BindChnPort2` -> `0xA0092008`), identically on this
+drop and on 0907, so that is not a property of either drop.
+
+---
+
+# 0907 — 2022-09-07, glibc 11.1.0 and uclibc 9.1.0
 
 ## Release
 
@@ -16,15 +135,12 @@ build stamps are minutes apart:
     glibc  11.1.0   build_time.20220907112126
     uclibc  9.1.0   build_time.20220907111141
 
-Read the stamp out of any file with:
-
-    strings libmi_sys.so | grep 'Sigmastar Module'
-
 ## Origin
 
 Taken from the vendor SDK release tree, not harvested from a shipped firmware
-and not taken from OpenIPC. This is a stronger provenance than the infinity6e
-entry beside it, which was reconstructed from a camera image.
+and not taken from OpenIPC. This is a stronger provenance than the 1230 entry
+above and than the infinity6e entry beside it, both of which were reconstructed
+from camera images.
 
     ssc377/release_0907/sourcecode/project/release/chip/i6c/ipc/common/
       glibc/11.1.0/mi_libs/dynamic/
@@ -80,15 +196,12 @@ than kept beside it:
       ipc/common/<libc>/<ver>/mi_libs/dynamic/      32 glibc / 31 uclibc
       sigma_common_libs/<libc>/<ver>/dynamic/       15 glibc / 17 uclibc
 
-    lib/0907/glibc/11.1.0/    47 libraries, 4 licence files
-    lib/0907/uclibc/9.1.0/    48 libraries, 4 licence files
-
 Merged because nothing downstream distinguishes them: both sets install to
 /usr/lib and the HAL dlopens by name, not by directory. infinity6e beside this
 is already flat for the same reason -- it was harvested from a firmware image,
 where libcam_os_wrapper and libmi_ive sit among the MI libraries -- so keeping
 i6c split would have made it the odd family out and forced a second install
-glob in sigmastar-lib.mk.
+glob in sigmastar-lib.mk. 1230 above is flat for that reason too.
 
 The merge is lossless: no filename appears in both vendor sets, in either C
 library variant, so nothing shadows anything. What is lost is the vendor's own
@@ -117,7 +230,7 @@ so the C library component selects content here as well.
 The four .txt files are the vendor's own license terms for the AEC and APC
 libraries. They are kept beside the binaries they cover rather than dropped,
 because this repository redistributes proprietary payload and those are its
-terms.
+terms. 1230 carries the same four.
 
 ## Unstamped
 
@@ -133,11 +246,8 @@ one. These thirteen are asserted by the tree they came from and nothing else:
     libfbc_decode libMD_LINUX libmi_ive libOD_LINUX libSRC_LINUX
     libSSL_2MIC_LINUX libSSL_4MIC_LINUX libVG_LINUX
 
-## Not consumed yet
+The same holds for the corresponding files in 1230.
 
-No thingino target builds Infinity6C. This family runs a 5.10.61 kernel while
-the SigmaStar port is 4.9.84 throughout, so these libraries are staged for a
-port that does not exist rather than supporting one that does. Nothing here has
-been loaded on hardware.
+---
 
-No source is available and none is claimed here.
+No source is available for any of this and none is claimed here.
